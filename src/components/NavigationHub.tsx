@@ -1,0 +1,234 @@
+import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
+import { SupersetClient, useTheme } from '@superset-ui/core';
+import {
+  DashboardSummary,
+  NavigationHubProps,
+  Tile,
+} from '../types';
+import {
+  buildCrumbs,
+  currentSlugFromPath,
+  dashboardListQuery,
+  dashboardUrl,
+  groupTiles,
+  mergeOverrides,
+  parseOverrides,
+  tileFromDashboard,
+  uniqueBySlug,
+} from '../utils/tiles';
+import { Icon } from './icons';
+
+type Status = 'loading' | 'ready' | 'error';
+
+const getJson = async (endpoint: string) => {
+  const { json } = await SupersetClient.get({ endpoint });
+  return json as any;
+};
+
+async function fetchByTags(tags: string[]): Promise<Tile[]> {
+  const pages = await Promise.all(
+    tags.map(async tag => {
+      const json = await getJson(
+        `/api/v1/dashboard/?q=${encodeURIComponent(dashboardListQuery(tag))}`,
+      );
+      return ((json.result ?? []) as DashboardSummary[])
+        .map(d => tileFromDashboard(d, tag))
+        .filter((tile): tile is Tile => tile !== null);
+    }),
+  );
+  return uniqueBySlug(pages.flat());
+}
+
+async function fetchBySlugs(slugs: string[]): Promise<Tile[]> {
+  const results = await Promise.all(
+    slugs.map(async (slug, index) => {
+      try {
+        const json = await getJson(`/api/v1/dashboard/${encodeURIComponent(slug)}`);
+        const tile = tileFromDashboard({ ...json.result, slug: json.result?.slug ?? slug });
+        return tile ? { ...tile, order: index } : null;
+      } catch {
+        return null; // inesistente o non accessibile: la tessera non compare
+      }
+    }),
+  );
+  return results.filter((tile): tile is Tile => tile !== null);
+}
+
+function useStyles() {
+  const theme = useTheme() as any;
+  return useMemo(() => {
+    const primary = theme?.colorPrimary ?? '#2893B3';
+    const bg = theme?.colorBgContainer ?? '#ffffff';
+    const border = theme?.colorBorderSecondary ?? theme?.colorBorder ?? '#d9dee3';
+    const text = theme?.colorText ?? '#1f2933';
+    const muted = theme?.colorTextSecondary ?? '#5f6b76';
+    const radius = theme?.borderRadius ?? 8;
+    const root: CSSProperties = { overflow: 'auto', color: text, boxSizing: 'border-box', padding: 8 };
+    const card: CSSProperties = {
+      display: 'flex',
+      gap: 12,
+      alignItems: 'flex-start',
+      padding: 16,
+      background: bg,
+      border: `1px solid ${border}`,
+      borderRadius: radius,
+      color: text,
+      textDecoration: 'none',
+    };
+    return { primary, border, muted, root, card };
+  }, [theme]);
+}
+
+function Tiles({ formData, datasetTiles, width, height }: NavigationHubProps) {
+  const styles = useStyles();
+  const [fetched, setFetched] = useState<Tile[]>([]);
+  const [status, setStatus] = useState<Status>(
+    formData.mode === 'dataset' ? 'ready' : 'loading',
+  );
+  const tagsKey = JSON.stringify(formData.tags);
+  const slugsKey = JSON.stringify(formData.slugs);
+
+  useEffect(() => {
+    if (formData.mode === 'dataset') {
+      setStatus('ready');
+      return undefined;
+    }
+    let cancelled = false;
+    setStatus('loading');
+    const load =
+      formData.mode === 'tags'
+        ? fetchByTags(formData.tags)
+        : fetchBySlugs(formData.slugs);
+    load
+      .then(tiles => {
+        if (cancelled) return;
+        setFetched(tiles);
+        setStatus('ready');
+      })
+      .catch(() => !cancelled && setStatus('error'));
+    return () => {
+      cancelled = true;
+    };
+    // tagsKey e slugsKey rappresentano il contenuto degli array
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.mode, tagsKey, slugsKey]);
+
+  const groups = useMemo(() => {
+    const base = formData.mode === 'dataset' ? datasetTiles : fetched;
+    const merged = mergeOverrides(base, parseOverrides(formData.overridesJson));
+    return groupTiles(merged, formData.groupBy);
+  }, [formData, datasetTiles, fetched]);
+
+  if (status === 'loading') return <div style={{ ...styles.root, width, height }}>…</div>;
+  if (status === 'error')
+    return <div style={{ ...styles.root, width, height }}>Impossibile caricare le dashboard.</div>;
+  if (groups.every(g => g.tiles.length === 0))
+    return <div style={{ ...styles.root, width, height, color: styles.muted }}>Nessuna dashboard disponibile.</div>;
+
+  return (
+    <div style={{ ...styles.root, width, height }}>
+      {groups.map(group => (
+        <section key={group.name || '_'} style={{ marginBottom: 20 }}>
+          {group.name ? (
+            <h3 style={{ margin: '0 0 10px', fontSize: 16 }}>{group.name}</h3>
+          ) : null}
+          <div
+            style={{
+              display: 'grid',
+              gap: 12,
+              gridTemplateColumns: `repeat(${formData.columns}, minmax(0, 1fr))`,
+            }}
+          >
+            {group.tiles.map(tile => (
+              <a key={tile.slug} href={dashboardUrl(tile.slug)} style={styles.card}>
+                <span style={{ color: styles.primary, flex: '0 0 auto' }}>
+                  <Icon name={tile.icon} />
+                </span>
+                <span style={{ minWidth: 0 }}>
+                  <strong style={{ display: 'block' }}>{tile.title}</strong>
+                  {tile.description ? (
+                    <span style={{ display: 'block', fontSize: 13, color: styles.muted, marginTop: 4 }}>
+                      {tile.description}
+                    </span>
+                  ) : null}
+                  {tile.status ? (
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        marginTop: 8,
+                        padding: '1px 8px',
+                        fontSize: 12,
+                        border: `1px solid ${styles.border}`,
+                        borderRadius: 999,
+                        color: styles.muted,
+                      }}
+                    >
+                      {tile.status}
+                    </span>
+                  ) : null}
+                </span>
+              </a>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  );
+}
+
+function Breadcrumbs({ formData, width, height }: NavigationHubProps) {
+  const styles = useStyles();
+  const [homeSlug, setHomeSlug] = useState<string | null>(formData.fallbackHomeSlug || null);
+  const [title, setTitle] = useState<string>('');
+  const currentSlug = currentSlugFromPath(window.location.pathname);
+
+  useEffect(() => {
+    let cancelled = false;
+    getJson('/api/v1/homepage/')
+      .then(json => {
+        const home = json.result;
+        if (!cancelled && home) setHomeSlug(home.slug ?? String(home.id));
+      })
+      .catch(() => undefined); // API non installata: resta lo slug di riserva
+    if (currentSlug) {
+      getJson(`/api/v1/dashboard/${encodeURIComponent(currentSlug)}`)
+        .then(json => !cancelled && setTitle(json.result?.dashboard_title ?? ''))
+        .catch(() => undefined);
+    }
+    return () => {
+      cancelled = true;
+    };
+  }, [currentSlug]);
+
+  const crumbs = buildCrumbs(
+    formData.homeLabel || 'Home',
+    homeSlug,
+    currentSlug,
+    title || document.title,
+  );
+
+  return (
+    <nav aria-label="breadcrumb" style={{ ...styles.root, width, height, display: 'flex', alignItems: 'center', gap: 8 }}>
+      {crumbs.map((crumb, index) => (
+        <React.Fragment key={`${crumb.label}-${index}`}>
+          {index > 0 ? <span style={{ color: styles.muted }}>›</span> : null}
+          {crumb.url ? (
+            <a href={crumb.url} style={{ color: styles.primary }}>
+              {crumb.label}
+            </a>
+          ) : (
+            <span aria-current="page">{crumb.label}</span>
+          )}
+        </React.Fragment>
+      ))}
+    </nav>
+  );
+}
+
+export default function NavigationHub(props: NavigationHubProps) {
+  return props.formData.mode === 'breadcrumb' ? (
+    <Breadcrumbs {...props} />
+  ) : (
+    <Tiles {...props} />
+  );
+}
