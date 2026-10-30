@@ -6,7 +6,7 @@ Chart plugin `navigation_hub` per Apache Superset 6.1.0. Trasforma una dashboard
 
 | Modalità | Sorgente delle tessere | Permessi |
 |:---|:---|:---|
-| Tag | Dashboard che hanno uno dei tag indicati (`/api/v1/dashboard/` con filtro `dashboard_tags`) | Superset nasconde le dashboard non accessibili |
+| Tag | Dashboard che hanno uno dei tag indicati, nome esatto (`/api/v1/dashboard/` con filtro `dashboard_tags`, paginato). Richiede il flag `TAGGING_SYSTEM` | Superset nasconde le dashboard non accessibili |
 | Elenco | Slug (o id) nell'ordine indicato, una chiamata per dashboard | Le dashboard non accessibili o inesistenti non compaiono |
 | Dataset | Righe del dataset, con le colonne mappate su titolo, slug, gruppo, descrizione, icona, ordine, stato | Le righe non sono filtrate per permessi |
 | Briciole | Homepage letta da `/api/v1/homepage/` (se `superset-homepage` è installato), altrimenti lo slug di riserva | Come la dashboard corrente |
@@ -17,6 +17,7 @@ Per le modalità senza dataset serve comunque un dataset qualsiasi: il plugin ch
 
 * Raggruppamento per tag o per colonna gruppo, da 1 a 6 colonne.
 * Colori e raggio dai token del tema di Superset.
+* L'API delle dashboard di Superset 6.1.0 non espone la descrizione: nelle modalità tag ed elenco il testo sotto il titolo si imposta con l'override per slug, in modalità dataset con la colonna descrizione.
 * Override per slug in JSON: `{"report-1": {"title": "Report 1", "order": 1, "group": "Group A", "icon": "heart"}, "draft": {"hidden": true}}`.
 * Icone: `dashboard`, `chart`, `table`, `heart`, `users`, `calendar`, `map`, `shield`, `flask`, `clock`.
 * Le tessere sono link normali: aprono la dashboard nella stessa scheda con un ricaricamento di pagina.

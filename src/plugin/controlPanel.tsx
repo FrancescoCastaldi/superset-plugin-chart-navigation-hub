@@ -38,7 +38,7 @@ const config: ControlPanelConfig = {
               label: t('Modalità'),
               default: 'tags',
               clearable: false,
-              renderTrigger: true,
+              // Niente renderTrigger: la modalità dataset cambia la query.
               choices: [
                 ['tags', t('Tessere da tag Superset')],
                 ['list', t('Tessere da elenco di slug')],
@@ -62,7 +62,9 @@ const config: ControlPanelConfig = {
               default: [],
               renderTrigger: true,
               choices: [],
-              description: t('Nomi dei tag Superset. Le dashboard con uno qualsiasi dei tag compaiono come tessere.'),
+              description: t(
+                'Nomi esatti dei tag Superset (richiede il flag TAGGING_SYSTEM). Le dashboard con uno qualsiasi dei tag compaiono come tessere.',
+              ),
               visibility: ({ controls }: any) => controls?.hub_mode?.value === 'tags',
             },
           },

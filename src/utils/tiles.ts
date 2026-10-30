@@ -12,10 +12,25 @@ const UNGROUPED = '';
 export const risonString = (value: string): string =>
   `'${value.replace(/!/g, '!!').replace(/'/g, "!'")}'`;
 
-export const dashboardListQuery = (tag: string, pageSize = 100): string =>
-  `(columns:!(id,slug,dashboard_title,description,tags.name),` +
+export const TAG_PAGE_SIZE = 100;
+
+/**
+ * Solo colonne presenti in `list_columns` dell'API dashboard di Superset 6.1.0
+ * (`description` non è esposta). Il filtro `dashboard_tags` fa un ILIKE
+ * `%valore%`: il risultato va filtrato con `hasTag`.
+ */
+export const dashboardListQuery = (
+  tag: string,
+  page = 0,
+  pageSize = TAG_PAGE_SIZE,
+): string =>
+  `(columns:!(id,slug,dashboard_title,tags.name),` +
   `filters:!((col:tags,opr:dashboard_tags,value:${risonString(tag)})),` +
-  `order_column:dashboard_title,order_direction:asc,page_size:${pageSize})`;
+  `order_column:dashboard_title,order_direction:asc,page:${page},page_size:${pageSize})`;
+
+/** Corrispondenza esatta sul nome del tag. */
+export const hasTag = (dashboard: DashboardSummary, tag: string): boolean =>
+  (dashboard.tags ?? []).some(candidate => candidate.name === tag);
 
 export const dashboardUrl = (slug: string): string =>
   `/superset/dashboard/${encodeURIComponent(slug)}/`;

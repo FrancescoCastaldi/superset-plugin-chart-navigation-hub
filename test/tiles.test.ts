@@ -4,6 +4,7 @@ import {
   dashboardListQuery,
   dashboardUrl,
   groupTiles,
+  hasTag,
   mergeOverrides,
   parseOverrides,
   risonString,
@@ -33,10 +34,18 @@ test('risonString escapes ! and quotes', () => {
   expect(risonString("a'b!c")).toBe("'a!'b!!c'");
 });
 
-test('dashboardListQuery builds a tag filter', () => {
-  const q = dashboardListQuery('area:x');
+test('dashboardListQuery builds a paged tag filter on existing list columns only', () => {
+  const q = dashboardListQuery('area:x', 2);
   expect(q).toContain("filters:!((col:tags,opr:dashboard_tags,value:'area:x'))");
-  expect(q).toContain('page_size:100');
+  expect(q).toContain('page:2,page_size:100');
+  expect(q).not.toContain('description');
+});
+
+test('hasTag matches the exact tag name (the API filter is a substring ILIKE)', () => {
+  const d = { id: 1, slug: 'a', dashboard_title: 'A', tags: [{ name: 'area:xy' }] };
+  expect(hasTag(d, 'area:x')).toBe(false);
+  expect(hasTag(d, 'area:xy')).toBe(true);
+  expect(hasTag({ ...d, tags: undefined }, 'area:xy')).toBe(false);
 });
 
 test('dashboardUrl encodes the slug', () => {

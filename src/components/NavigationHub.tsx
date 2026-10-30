@@ -11,6 +11,8 @@ import {
   dashboardListQuery,
   dashboardUrl,
   groupTiles,
+  hasTag,
+  TAG_PAGE_SIZE,
   mergeOverrides,
   parseOverrides,
   tileFromDashboard,
@@ -25,18 +27,29 @@ const getJson = async (endpoint: string) => {
   return json as any;
 };
 
+const MAX_TAG_PAGES = 20;
+
+async function fetchByTag(tag: string): Promise<Tile[]> {
+  const tiles: Tile[] = [];
+  for (let page = 0; page < MAX_TAG_PAGES; page += 1) {
+    // eslint-disable-next-line no-await-in-loop
+    const json = await getJson(
+      `/api/v1/dashboard/?q=${encodeURIComponent(dashboardListQuery(tag, page))}`,
+    );
+    const rows = (json.result ?? []) as DashboardSummary[];
+    rows
+      .filter(row => hasTag(row, tag))
+      .forEach(row => {
+        const tile = tileFromDashboard(row, tag);
+        if (tile) tiles.push(tile);
+      });
+    if (rows.length < TAG_PAGE_SIZE) break;
+  }
+  return tiles;
+}
+
 async function fetchByTags(tags: string[]): Promise<Tile[]> {
-  const pages = await Promise.all(
-    tags.map(async tag => {
-      const json = await getJson(
-        `/api/v1/dashboard/?q=${encodeURIComponent(dashboardListQuery(tag))}`,
-      );
-      return ((json.result ?? []) as DashboardSummary[])
-        .map(d => tileFromDashboard(d, tag))
-        .filter((tile): tile is Tile => tile !== null);
-    }),
-  );
-  return uniqueBySlug(pages.flat());
+  return uniqueBySlug((await Promise.all(tags.map(fetchByTag))).flat());
 }
 
 async function fetchBySlugs(slugs: string[]): Promise<Tile[]> {
