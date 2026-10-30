@@ -1,5 +1,3 @@
-import React from 'react';
-
 /** Set minimo di icone SVG generiche (24x24, tratto). Nome sconosciuto => dashboard. */
 const PATHS: Record<string, string> = {
   dashboard: 'M3 3h8v8H3zM13 3h8v5h-8zM13 10h8v11h-8zM3 13h8v8H3z',
