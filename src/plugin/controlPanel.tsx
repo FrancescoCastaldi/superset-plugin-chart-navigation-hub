@@ -19,7 +19,7 @@ const columnControl = (name: string, label: string, description: string) => [
       default: null,
       clearable: true,
       mapStateToProps: columnChoices,
-      visibility: ({ controls }: any) => controls?.mode?.value === 'dataset',
+      visibility: ({ controls }: any) => controls?.hub_mode?.value === 'dataset',
     },
   },
 ];
@@ -32,7 +32,7 @@ const config: ControlPanelConfig = {
       controlSetRows: [
         [
           {
-            name: 'mode',
+            name: 'hub_mode',
             config: {
               type: 'SelectControl',
               label: t('Modalità'),
@@ -53,7 +53,7 @@ const config: ControlPanelConfig = {
         ],
         [
           {
-            name: 'tags',
+            name: 'hub_tags',
             config: {
               type: 'SelectControl',
               multi: true,
@@ -63,13 +63,13 @@ const config: ControlPanelConfig = {
               renderTrigger: true,
               choices: [],
               description: t('Nomi dei tag Superset. Le dashboard con uno qualsiasi dei tag compaiono come tessere.'),
-              visibility: ({ controls }: any) => controls?.mode?.value === 'tags',
+              visibility: ({ controls }: any) => controls?.hub_mode?.value === 'tags',
             },
           },
         ],
         [
           {
-            name: 'slugs',
+            name: 'hub_slugs',
             config: {
               type: 'SelectControl',
               multi: true,
@@ -79,7 +79,7 @@ const config: ControlPanelConfig = {
               renderTrigger: true,
               choices: [],
               description: t('Slug (o id) nell\'ordine in cui devono comparire.'),
-              visibility: ({ controls }: any) => controls?.mode?.value === 'list',
+              visibility: ({ controls }: any) => controls?.hub_mode?.value === 'list',
             },
           },
         ],
@@ -98,7 +98,7 @@ const config: ControlPanelConfig = {
       controlSetRows: [
         [
           {
-            name: 'columns',
+            name: 'grid_columns',
             config: {
               type: 'SliderControl',
               label: t('Colonne'),
@@ -151,7 +151,7 @@ const config: ControlPanelConfig = {
               label: t('Etichetta Home (briciole)'),
               default: 'Home',
               renderTrigger: true,
-              visibility: ({ controls }: any) => controls?.mode?.value === 'breadcrumb',
+              visibility: ({ controls }: any) => controls?.hub_mode?.value === 'breadcrumb',
             },
           },
         ],
@@ -164,7 +164,7 @@ const config: ControlPanelConfig = {
               default: '',
               renderTrigger: true,
               description: t('Usato se l\'API /api/v1/homepage/ non è installata.'),
-              visibility: ({ controls }: any) => controls?.mode?.value === 'breadcrumb',
+              visibility: ({ controls }: any) => controls?.hub_mode?.value === 'breadcrumb',
             },
           },
         ],

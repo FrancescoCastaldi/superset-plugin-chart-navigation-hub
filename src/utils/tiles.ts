@@ -36,11 +36,11 @@ export const tileFromDashboard = (
   dashboard: DashboardSummary,
   tag?: string,
 ): Tile | null => {
-  const slug = dashboard.slug || String(dashboard.id);
+  const slug = dashboard.slug || (dashboard.id != null ? String(dashboard.id) : '');
   if (!slug) return null;
   return {
     slug,
-    title: dashboard.dashboard_title,
+    title: dashboard.dashboard_title || slug,
     description: dashboard.description || undefined,
     order: Number.MAX_SAFE_INTEGER,
     tag: tag ?? dashboard.tags?.[0]?.name,
