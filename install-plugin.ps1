@@ -402,11 +402,21 @@ if (Test-Path $PackageJson) {
         Write-Color "[SUCCESS] Aggiunto @fontsource/inter a package.json." "Green"
     }
 
+    # Superset 6.1.0 RC3 usa @deck.gl/widgets (via @deck.gl/react) senza dichiararlo tra le dipendenze:
+    # senza, webpack non risolve il modulo. Compare solo in "overrides", quindi si controlla "dependencies".
+    $DeclaredDeps = @()
+    try { $DeclaredDeps = @(($PkgContent | ConvertFrom-Json).dependencies.PSObject.Properties.Name) } catch { }
+    if ($DeclaredDeps.Count -gt 0 -and $DeclaredDeps -notcontains '@deck.gl/widgets') {
+        $PkgContent = $PkgContent -replace '("dependencies"\s*:\s*\{)', "`$1`n    `"@deck.gl/widgets`": `"~9.2.5`","
+        $Modified = $true
+        Write-Color "[SUCCESS] Aggiunto @deck.gl/widgets a package.json." "Green"
+    }
+
     if ($Modified) {
         [System.IO.File]::WriteAllText($PackageJson, $PkgContent, [System.Text.UTF8Encoding]::new($false))
         Write-Color "[INFO] Modifiche salvate in package.json (sara' necessario npm install / rebuild)." "Gray"
     } else {
-        Write-Color "[INFO] Le dipendenze critiche (@react-spring/web, @fontsource/inter) sono gia' presenti." "Gray"
+        Write-Color "[INFO] Le dipendenze critiche (@react-spring/web, @fontsource/inter, @deck.gl/widgets) sono gia' presenti." "Gray"
     }
 }
 Write-Color ""
