@@ -1,16 +1,16 @@
 # Changelog
 
-Formato Keep a Changelog 1.1.0, versioni SemVer.
+Keep a Changelog 1.1.0 format, SemVer versioning.
 
 ## [Unreleased]
 
 ### Added
-* Plugin `navigation_hub` con modalità tag, elenco, dataset e briciole.
+* `navigation_hub` plugin with tags, list, dataset and breadcrumb modes.
 
 ### Fixed
-* L'installer aggiunge `@deck.gl/widgets` alle dipendenze di Superset 6.1.0 RC3, dove manca e fa fallire la build webpack.
-* La modalità tag filtra per nome esatto del tag (il filtro dell'API è un ILIKE su sottostringa) e pagina i risultati.
-* Non si richiede più la colonna `description`, assente dall'elenco dell'API dashboard.
-* Il cambio di modalità rilancia la query (era `renderTrigger`).
-* Controlli rinominati `hub_mode`, `hub_tags`, `hub_slugs`, `grid_columns` per non collidere con `mode`, `tags` e `columns` di formData.
-* Una dashboard senza titolo usa lo slug invece di rompere l'ordinamento.
+* The installer adds `@deck.gl/widgets` to the Superset 6.1.0 RC3 dependencies, where it is missing and breaks the webpack build.
+* Tag mode filters by exact tag name (the API filter is an ILIKE on substrings) and pages through the results.
+* The `description` column is no longer requested, because the dashboard API list does not expose it.
+* Changing the mode re-runs the query (it used `renderTrigger`).
+* Controls renamed to `hub_mode`, `hub_tags`, `hub_slugs` and `grid_columns` so they do not clash with `mode`, `tags` and `columns` in formData.
+* A dashboard without a title uses its slug instead of breaking the sort order.

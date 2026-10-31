@@ -60,7 +60,7 @@ async function fetchBySlugs(slugs: string[]): Promise<Tile[]> {
         const tile = tileFromDashboard({ ...json.result, slug: json.result?.slug ?? slug });
         return tile ? { ...tile, order: index } : null;
       } catch {
-        return null; // inesistente o non accessibile: la tessera non compare
+        return null; // missing or not accessible: the tile does not appear
       }
     }),
   );
@@ -122,7 +122,7 @@ function Tiles({ formData, datasetTiles, width, height }: NavigationHubProps) {
     return () => {
       cancelled = true;
     };
-    // tagsKey e slugsKey rappresentano il contenuto degli array
+    // tagsKey and slugsKey represent the content of the arrays
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData.mode, tagsKey, slugsKey]);
 
@@ -134,9 +134,9 @@ function Tiles({ formData, datasetTiles, width, height }: NavigationHubProps) {
 
   if (status === 'loading') return <div style={{ ...styles.root, width, height }}>…</div>;
   if (status === 'error')
-    return <div style={{ ...styles.root, width, height }}>Impossibile caricare le dashboard.</div>;
+    return <div style={{ ...styles.root, width, height }}>Could not load the dashboards.</div>;
   if (groups.every(g => g.tiles.length === 0))
-    return <div style={{ ...styles.root, width, height, color: styles.muted }}>Nessuna dashboard disponibile.</div>;
+    return <div style={{ ...styles.root, width, height, color: styles.muted }}>No dashboards available.</div>;
 
   return (
     <div style={{ ...styles.root, width, height }}>
@@ -202,7 +202,7 @@ function Breadcrumbs({ formData, width, height }: NavigationHubProps) {
         const home = json.result;
         if (!cancelled && home) setHomeSlug(home.slug ?? String(home.id));
       })
-      .catch(() => undefined); // API non installata: resta lo slug di riserva
+      .catch(() => undefined); // API not installed: the fallback slug stays
     if (currentSlug) {
       getJson(`/api/v1/dashboard/${encodeURIComponent(currentSlug)}`)
         .then(json => !cancelled && setTitle(json.result?.dashboard_title ?? ''))

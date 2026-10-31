@@ -15,9 +15,9 @@ export const risonString = (value: string): string =>
 export const TAG_PAGE_SIZE = 100;
 
 /**
- * Solo colonne presenti in `list_columns` dell'API dashboard di Superset 6.1.0
- * (`description` non è esposta). Il filtro `dashboard_tags` fa un ILIKE
- * `%valore%`: il risultato va filtrato con `hasTag`.
+ * Only the columns listed in `list_columns` of the Superset 6.1.0 dashboard API
+ * (`description` is not exposed). The `dashboard_tags` filter runs an ILIKE
+ * `%value%`: the result must be filtered with `hasTag`.
  */
 export const dashboardListQuery = (
   tag: string,
@@ -147,7 +147,7 @@ export interface Crumb {
   url?: string;
 }
 
-/** Briciole "Home > dashboard corrente". La Home non viene ripetuta se coincide. */
+/** Breadcrumb "Home > current dashboard". Home is not repeated when it is the same. */
 export const buildCrumbs = (
   homeLabel: string,
   homeSlug: string | null,
@@ -162,7 +162,7 @@ export const buildCrumbs = (
   ];
 };
 
-/** Slug della dashboard corrente da un pathname /superset/dashboard/<slug>/. */
+/** Slug of the current dashboard from a /superset/dashboard/<slug>/ pathname. */
 export const currentSlugFromPath = (pathname: string): string | null => {
   const match = pathname.match(/\/superset\/dashboard\/([^/]+)/);
   return match ? decodeURIComponent(match[1]) : null;

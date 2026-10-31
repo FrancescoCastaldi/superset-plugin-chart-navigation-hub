@@ -10,7 +10,7 @@ const t = (str: string) => str;
 const metadata = new ChartMetadata({
   name: t('Navigation Hub'),
   description: t(
-    'Pagina indice a tessere: elenca le dashboard per tag, elenco di slug o righe di un dataset, rispettando i permessi dell\'utente. In modalità briciole mostra il percorso verso la homepage.',
+    'Index page of tiles: lists dashboards by tag, by slug list or by dataset rows, respecting the user\'s permissions. In breadcrumb mode it shows the path to the homepage.',
   ),
   behaviors: [Behavior.InteractiveChart],
   category: t('Navigation'),

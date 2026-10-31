@@ -1,36 +1,36 @@
 # superset-plugin-chart-navigation-hub
 
-Chart plugin `navigation_hub` per Apache Superset 6.1.0. Trasforma una dashboard in una pagina indice a tessere, oppure mostra le briciole "Home > dashboard corrente". Funziona da solo e si abbina a `superset-homepage`.
+Chart plugin `navigation_hub` for Apache Superset 6.1.0. It turns a dashboard into an index page of tiles, or shows breadcrumbs "Home > current dashboard". It works on its own and pairs with `superset-homepage`.
 
-## Modalità
+## Modes
 
-| Modalità | Sorgente delle tessere | Permessi |
+| Mode | Source of the tiles | Permissions |
 |:---|:---|:---|
-| Tag | Dashboard che hanno uno dei tag indicati, nome esatto (`/api/v1/dashboard/` con filtro `dashboard_tags`, paginato). Richiede il flag `TAGGING_SYSTEM` | Superset nasconde le dashboard non accessibili |
-| Elenco | Slug (o id) nell'ordine indicato, una chiamata per dashboard | Le dashboard non accessibili o inesistenti non compaiono |
-| Dataset | Righe del dataset, con le colonne mappate su titolo, slug, gruppo, descrizione, icona, ordine, stato | Le righe non sono filtrate per permessi |
-| Briciole | Homepage letta da `/api/v1/homepage/` (se `superset-homepage` è installato), altrimenti lo slug di riserva | Come la dashboard corrente |
+| Tags | Dashboards that have one of the given tags, exact name (`/api/v1/dashboard/` with the `dashboard_tags` filter, paginated). Requires the `TAGGING_SYSTEM` flag | Superset hides dashboards the user cannot access |
+| List | Slugs (or ids) in the given order, one call per dashboard | Dashboards that are not accessible or do not exist do not appear |
+| Dataset | Rows of the dataset, with columns mapped to title, slug, group, description, icon, order and status | Rows are not filtered by permissions |
+| Breadcrumb | Homepage read from `/api/v1/homepage/` (if `superset-homepage` is installed), otherwise the fallback slug | Same as the current dashboard |
 
-Per le modalità senza dataset serve comunque un dataset qualsiasi: il plugin chiede un `COUNT(*)`.
+Modes without a dataset still need any dataset: the plugin requests a `COUNT(*)`.
 
-## Aspetto
+## Look
 
-* Raggruppamento per tag o per colonna gruppo, da 1 a 6 colonne.
-* Colori e raggio dai token del tema di Superset.
-* L'API delle dashboard di Superset 6.1.0 non espone la descrizione: nelle modalità tag ed elenco il testo sotto il titolo si imposta con l'override per slug, in modalità dataset con la colonna descrizione.
-* Override per slug in JSON: `{"report-1": {"title": "Report 1", "order": 1, "group": "Group A", "icon": "heart"}, "draft": {"hidden": true}}`.
-* Icone: `dashboard`, `chart`, `table`, `heart`, `users`, `calendar`, `map`, `shield`, `flask`, `clock`.
-* Le tessere sono link normali: aprono la dashboard nella stessa scheda con un ricaricamento di pagina.
+* Grouping by tag or by group column, from 1 to 6 columns.
+* Colors and radius come from the Superset theme tokens.
+* The Superset 6.1.0 dashboard API does not expose the description. In tag and list modes the text under the title is set with the per-slug override; in dataset mode it comes from the description column.
+* Per-slug override in JSON: `{"report-1": {"title": "Report 1", "order": 1, "group": "Group A", "icon": "heart"}, "draft": {"hidden": true}}`.
+* Icons: `dashboard`, `chart`, `table`, `heart`, `users`, `calendar`, `map`, `shield`, `flask`, `clock`.
+* Tiles are plain links: they open the dashboard in the same tab with a page reload.
 
-## Installazione
+## Installation
 
 ```powershell
-.\install-plugin.ps1 -SupersetPath <cartella superset>
+.\install-plugin.ps1 -SupersetPath <superset folder>
 ```
 
-Lo script copia il plugin in `superset-frontend/plugins/`, registra `NavigationHubChartPlugin` in `MainPreset.ts` (idempotente, con backup) e pulisce la cache. Poi ricompilare il frontend di Superset.
+The script copies the plugin into `superset-frontend/plugins/`, registers `NavigationHubChartPlugin` in `MainPreset.ts` (idempotent, with a backup) and clears the cache. Then rebuild the Superset frontend.
 
-## Sviluppo
+## Development
 
 ```powershell
 npm install
@@ -38,4 +38,4 @@ npm test
 npm run build
 ```
 
-I controlli del pannello si chiamano `hub_mode`, `hub_tags`, `hub_slugs` e `grid_columns`: `mode`, `tags` e `columns` collidono con chiavi standard di formData (`columns` è la lista di colonne della query).
+The control panel controls are named `hub_mode`, `hub_tags`, `hub_slugs` and `grid_columns`: `mode`, `tags` and `columns` clash with standard formData keys (`columns` is the list of query columns).

@@ -11,12 +11,12 @@ const DATASET_COLUMN_KEYS = [
 ];
 
 /**
- * Tag, elenco e briciole non leggono righe: serve comunque una query valida,
- * quindi si chiede un COUNT(*). In modalità dataset si chiedono le colonne mappate.
+ * Tag, list and breadcrumb modes read no rows, but still need a valid query,
+ * so a COUNT(*) is requested. In dataset mode the mapped columns are requested.
  *
- * I controlli si chiamano hub_* e grid_columns: `mode`, `tags` e `columns`
- * collidono con chiavi standard di formData (in particolare `columns` è la lista
- * di colonne della query).
+ * The controls are named hub_* and grid_columns: `mode`, `tags` and `columns`
+ * clash with standard formData keys (in particular `columns` is the list
+ * of query columns).
  */
 export default function buildQuery(formData: QueryFormData) {
   const fd = formData as Record<string, any>;

@@ -10,7 +10,7 @@ const clampColumns = (value: unknown): number => {
 const asArray = (value: unknown): string[] =>
   Array.isArray(value) ? value.map(String) : [];
 
-/** ChartProps espone formData in camelCase, i test e altri chiamanti in snake_case. */
+/** ChartProps exposes formData in camelCase, while tests and other callers use snake_case. */
 export default function transformProps(chartProps: ChartProps): NavigationHubProps {
   const { width, height, formData, queriesData } = chartProps as any;
   const fd = formData as Record<string, any>;
