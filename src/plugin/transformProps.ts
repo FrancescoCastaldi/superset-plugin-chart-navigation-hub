@@ -39,5 +39,6 @@ export default function transformProps(chartProps: ChartProps): NavigationHubPro
     height,
     formData: hub,
     datasetTiles: hub.mode === 'dataset' ? tilesFromRows(rows, hub) : [],
+    theme: (chartProps as any).theme,
   };
 }

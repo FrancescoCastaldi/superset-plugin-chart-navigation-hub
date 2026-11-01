@@ -52,6 +52,8 @@ export interface NavigationHubProps {
   formData: NavigationHubFormData;
   /** Tiles already known at transform time (dataset mode). */
   datasetTiles: Tile[];
+  /** Theme of the host Superset, for colors and radius. */
+  theme?: Record<string, any>;
 }
 
 export interface DashboardSummary {

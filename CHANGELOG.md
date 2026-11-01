@@ -2,6 +2,14 @@
 
 Keep a Changelog 1.1.0 format, SemVer versioning.
 
+## [0.1.1] - 2026-11-01
+
+### Fixed
+- **The chart failed to render on Superset 6.1** with `useTheme is not a function`: the hook is exported from different packages depending on the Superset version. The theme now reaches the chart through its props, so no hook is imported.
+
+### Added
+- A screenshot of the tiles in the README and a real gallery image and thumbnail.
+
 ## [Unreleased]
 
 ### Added

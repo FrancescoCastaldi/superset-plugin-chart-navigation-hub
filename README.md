@@ -2,6 +2,10 @@
 
 Chart plugin `navigation_hub` for Apache Superset 6.1.0. It turns a dashboard into an index page of tiles, or shows breadcrumbs "Home > current dashboard". It works on its own and pairs with `superset-homepage`.
 
+![Navigation Hub tiles](docs/images/navigation_hub.png)
+
+*List mode: one tile per dashboard, in a screenshot of a real chart in Chrome.*
+
 ## Modes
 
 | Mode | Source of the tiles | Permissions |

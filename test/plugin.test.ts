@@ -75,3 +75,8 @@ test('tileFromDashboard uses the slug as title when the title is missing', () =>
   expect(tileFromDashboard({ slug: 'x' } as any)).toMatchObject({ slug: 'x', title: 'x' });
   expect(tileFromDashboard({} as any)).toBeNull();
 });
+
+test('transformProps hands the host theme to the component', () => {
+  const props = transformProps({ width: 10, height: 10, formData: {}, queriesData: [{ data: [] }], theme: { colorPrimary: '#123456' } } as any);
+  expect(props.theme).toEqual({ colorPrimary: '#123456' });
+});

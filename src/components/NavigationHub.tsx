@@ -1,5 +1,5 @@
-import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
-import { SupersetClient, useTheme } from '@superset-ui/core';
+import React, { CSSProperties, createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { SupersetClient } from '@superset-ui/core';
 import {
   DashboardSummary,
   NavigationHubProps,
@@ -67,8 +67,12 @@ async function fetchBySlugs(slugs: string[]): Promise<Tile[]> {
   return results.filter((tile): tile is Tile => tile !== null);
 }
 
+// The theme reaches the chart through its props: `useTheme` is exported from different packages
+// depending on the Superset version, so the plugin does not import it.
+const HubThemeContext = createContext<Record<string, any>>({});
+
 function useStyles() {
-  const theme = useTheme() as any;
+  const theme = useContext(HubThemeContext);
   return useMemo(() => {
     const primary = theme?.colorPrimary ?? '#2893B3';
     const bg = theme?.colorBgContainer ?? '#ffffff';
@@ -239,9 +243,9 @@ function Breadcrumbs({ formData, width, height }: NavigationHubProps) {
 }
 
 export default function NavigationHub(props: NavigationHubProps) {
-  return props.formData.mode === 'breadcrumb' ? (
-    <Breadcrumbs {...props} />
-  ) : (
-    <Tiles {...props} />
+  return (
+    <HubThemeContext.Provider value={props.theme ?? {}}>
+      {props.formData.mode === 'breadcrumb' ? <Breadcrumbs {...props} /> : <Tiles {...props} />}
+    </HubThemeContext.Provider>
   );
 }
