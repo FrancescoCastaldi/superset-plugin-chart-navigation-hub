@@ -135,7 +135,7 @@ const config: ControlPanelConfig = {
             config: {
               type: 'TextAreaControl',
               language: 'json',
-              label: t('Override per slug (JSON)'),
+              label: t('Overrides per slug (JSON)'),
               default: '',
               renderTrigger: true,
               rows: 8,

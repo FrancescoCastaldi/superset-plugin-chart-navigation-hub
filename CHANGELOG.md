@@ -2,6 +2,11 @@
 
 Keep a Changelog 1.1.0 format, SemVer versioning.
 
+## [0.1.2] - 2026-11-01
+
+### Changed
+- The control panel is now English: a few labels were still Italian.
+
 ## [0.1.1] - 2026-11-01
 
 ### Fixed
