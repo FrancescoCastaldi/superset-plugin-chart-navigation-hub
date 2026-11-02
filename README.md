@@ -1,6 +1,6 @@
-# superset-plugin-chart-navigation-hub
+# StratumNavigation (Navigation Hub) - Index Tiles & Breadcrumb Plugin for Apache Superset
 
-Chart plugin `navigation_hub` for Apache Superset 6.1.0. It turns a dashboard into an index page of tiles, or shows breadcrumbs "Home > current dashboard". It works on its own and pairs with `superset-homepage`.
+Chart plugin `navigation_hub` (`StratumNavigation`) for Apache Superset 6.1.0. It turns a dashboard into an index page of tiles, or shows breadcrumbs "Home > current dashboard". It works on its own and pairs with `superset-homepage`.
 
 ![Navigation Hub tiles](docs/images/navigation_hub.png)
 

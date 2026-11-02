@@ -8,13 +8,13 @@ import example from '../images/example.png';
 const t = (str: string) => str;
 
 const metadata = new ChartMetadata({
-  name: t('Navigation Hub'),
+  name: t('StratumNavigation: Navigation Hub'),
   description: t(
-    'Index page of tiles: lists dashboards by tag, by slug list or by dataset rows, respecting the user\'s permissions. In breadcrumb mode it shows the path to the homepage.',
+    'StratumNavigation Hub: index page of tiles and breadcrumbs to the homepage or other dashboards, respecting user permissions.',
   ),
   behaviors: [Behavior.InteractiveChart],
   category: t('Navigation'),
-  tags: [t('Navigation'), t('Homepage'), t('Menu'), t('Index')],
+  tags: [t('Stratum'), t('Navigation'), t('Homepage'), t('Menu'), t('Index')],
   credits: ['Francesco Castaldi'],
   exampleGallery: [{ url: example }],
   thumbnail,
